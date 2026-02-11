@@ -2,6 +2,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Force rebuild: 2025-01-20 cache bust
+
 # Copiar solo requirements primero (cache layer)
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
