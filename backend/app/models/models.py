@@ -433,3 +433,263 @@ class ClientInsight(Base):
     objections_history = Column(Text)  # JSON array
     
     last_updated = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# ============================================================================
+# MÓDULO GROWTH - AGENTES DE MARKETING AUTOMÁTICO
+# ============================================================================
+
+class ContentStatus(str, enum.Enum):
+    DRAFT = "draft"
+    SCHEDULED = "scheduled"
+    PUBLISHED = "published"
+    FAILED = "failed"
+
+class ReviewStatus(str, enum.Enum):
+    REQUESTED = "requested"
+    RECEIVED = "received"
+    PUBLISHED = "published"
+    REWARDED = "rewarded"
+
+class ReferralStatus(str, enum.Enum):
+    INVITED = "invited"
+    CLICKED = "clicked"
+    SIGNED_UP = "signed_up"
+    COMPLETED_APPOINTMENT = "completed_appointment"
+    REWARDED = "rewarded"
+
+# AGENTE GROWTH 1: ContentGenerator
+class GeneratedContent(Base):
+    """Contenido generado automáticamente para redes sociales"""
+    __tablename__ = "generated_content"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    professional_id = Column(Integer, ForeignKey("professionals.id"))
+    
+    # Plataforma y formato
+    platform = Column(String(50))  # instagram, linkedin, twitter
+    content_type = Column(String(50))  # post, story, carousel, reel_script
+    
+    # Contenido generado por IA
+    title = Column(String(255))
+    content = Column(Text)  # Texto completo del post
+    hashtags = Column(Text)  # JSON array
+    cta_text = Column(String(255))  # Call to action específico
+    link_to_include = Column(String(500))  # Link de reserva
+    
+    # Estado
+    status = Column(Enum(ContentStatus), default=ContentStatus.DRAFT)
+    
+    # Scheduling
+    scheduled_at = Column(DateTime(timezone=True))
+    published_at = Column(DateTime(timezone=True))
+    
+    # Engagement estimado por IA
+    predicted_engagement_score = Column(Integer, default=5)  # 1-10
+    target_audience = Column(String(255))  # Descripción del público objetivo
+    
+    # Métricas reales (si se publica)
+    actual_likes = Column(Integer, default=0)
+    actual_comments = Column(Integer, default=0)
+    actual_clicks = Column(Integer, default=0)  # Clicks al link de reserva
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class ContentStrategy(Base):
+    """Estrategia de contenido del profesional"""
+    __tablename__ = "content_strategies"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    professional_id = Column(Integer, ForeignKey("professionals.id"), unique=True)
+    
+    # Configuración
+    tone_of_voice = Column(String(50), default="professional")  # professional, casual, inspirational
+    posting_frequency = Column(Integer, default=3)  # posts por semana
+    preferred_platforms = Column(Text)  # JSON: ["instagram", "linkedin"]
+    
+    # Temas y pilares de contenido
+    content_pillars = Column(Text)  # JSON: ["tips", "case_studies", "behind_scenes"]
+    target_audience_description = Column(Text)
+    
+    # Links
+    booking_link = Column(String(500))
+    website_link = Column(String(500))
+    
+    # Horarios óptimos (aprendidos por IA)
+    optimal_posting_times = Column(Text)  # JSON: {"instagram": "14:00", "linkedin": "09:00"}
+    
+    is_active = Column(Boolean, default=True)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+# AGENTE GROWTH 2: ReviewBooster
+class ReviewRequest(Base):
+    """Solicitudes de review automáticas"""
+    __tablename__ = "review_requests"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    appointment_id = Column(Integer, ForeignKey("appointments.id"))
+    professional_id = Column(Integer, ForeignKey("professionals.id"))
+    client_id = Column(Integer, ForeignKey("users.id"))
+    
+    # Estado
+    status = Column(Enum(ReviewStatus), default=ReviewStatus.REQUESTED)
+    
+    # Contenido
+    request_message = Column(Text)  # Mensaje personalizado enviado
+    sent_at = Column(DateTime(timezone=True))
+    
+    # Respuesta del cliente
+    client_rating = Column(Integer)  # 1-5 estrellas
+    client_review_text = Column(Text)
+    received_at = Column(DateTime(timezone=True))
+    
+    # Publicación
+    published_on_website = Column(Boolean, default=False)
+    published_on_google = Column(Boolean, default=False)
+    published_at = Column(DateTime(timezone=True))
+    
+    # Recompensa (opcional)
+    reward_given = Column(Boolean, default=False)
+    reward_type = Column(String(50))  # discount, free_session, etc.
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class PublicReview(Base):
+    """Reviews publicadas en página pública del profesional"""
+    __tablename__ = "public_reviews"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    professional_id = Column(Integer, ForeignKey("professionals.id"))
+    review_request_id = Column(Integer, ForeignKey("review_requests.id"))
+    
+    # Contenido publicado
+    client_name = Column(String(255))  # Puede ser "Carlos R." para privacidad
+    client_photo_url = Column(String(500))
+    rating = Column(Integer)
+    review_text = Column(Text)
+    service_received = Column(String(255))
+    
+    # SEO y display
+    keywords = Column(Text)  # JSON: para SEO
+    is_featured = Column(Boolean, default=False)  # Mostrar en homepage
+    display_order = Column(Integer, default=0)
+    
+    # Métricas
+    views_count = Column(Integer, default=0)
+    helpful_count = Column(Integer, default=0)
+    
+    published_at = Column(DateTime(timezone=True), server_default=func.now())
+
+# AGENTE GROWTH 3: ReferralEngine
+class ReferralCampaign(Base):
+    """Campañas de referidos"""
+    __tablename__ = "referral_campaigns"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    professional_id = Column(Integer, ForeignKey("professionals.id"))
+    
+    # Configuración
+    name = Column(String(255))  # "Trae un amigo", "Doble recompensa", etc.
+    description = Column(Text)
+    
+    # Recompensas
+    referrer_reward = Column(String(255))  # "20% descuento próxima sesión"
+    referred_reward = Column(String(255))  # "Primera sesión gratis"
+    
+    # Límites
+    max_referrals_per_person = Column(Integer, default=5)
+    campaign_starts_at = Column(DateTime(timezone=True))
+    campaign_ends_at = Column(DateTime(timezone=True))
+    
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Referral(Base):
+    """Tracking individual de referidos"""
+    __tablename__ = "referrals"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    campaign_id = Column(Integer, ForeignKey("referral_campaigns.id"))
+    professional_id = Column(Integer, ForeignKey("professionals.id"))
+    
+    # Quién refiere
+    referrer_id = Column(Integer, ForeignKey("users.id"))
+    referrer_email = Column(String(255))
+    
+    # Quien es referido
+    referred_email = Column(String(255))
+    referred_name = Column(String(255))
+    
+    # Tracking
+    referral_code = Column(String(50), unique=True, index=True)
+    referral_link = Column(String(500))
+    
+    # Estado del funnel
+    status = Column(Enum(ReferralStatus), default=ReferralStatus.INVITED)
+    
+    # Timestamps del funnel
+    invited_at = Column(DateTime(timezone=True), server_default=func.now())
+    clicked_at = Column(DateTime(timezone=True))
+    signed_up_at = Column(DateTime(timezone=True))
+    completed_appointment_at = Column(DateTime(timezone=True))
+    
+    # Recompensas
+    referrer_reward_given = Column(Boolean, default=False)
+    referrer_reward_given_at = Column(DateTime(timezone=True))
+    referred_reward_given = Column(Boolean, default=False)
+    referred_reward_given_at = Column(DateTime(timezone=True))
+    
+    # Métricas
+    clicks_count = Column(Integer, default=0)
+
+class ReferralInvitation(Base):
+    """Invitaciones específicas enviadas"""
+    __tablename__ = "referral_invitations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    referral_id = Column(Integer, ForeignKey("referrals.id"))
+    
+    # Contenido generado por IA
+    invitation_message = Column(Text)
+    personalization_notes = Column(Text)  # Por qué IA pensó que este amigo encaja
+    
+    # Envío
+    channel = Column(String(50))  # email, whatsapp
+    sent_at = Column(DateTime(timezone=True))
+    opened_at = Column(DateTime(timezone=True))
+    
+    # Respuesta
+    recipient_replied = Column(Boolean, default=False)
+    recipient_reply = Column(Text)
+
+# Métricas de Growth
+class GrowthMetrics(Base):
+    """Métricas acumuladas del módulo growth"""
+    __tablename__ = "growth_metrics"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    professional_id = Column(Integer, ForeignKey("professionals.id"))
+    date = Column(Date)
+    
+    # Contenido
+    posts_generated = Column(Integer, default=0)
+    posts_published = Column(Integer, default=0)
+    clicks_from_content = Column(Integer, default=0)
+    
+    # Reviews
+    reviews_requested = Column(Integer, default=0)
+    reviews_received = Column(Integer, default=0)
+    average_rating = Column(Float, default=0)
+    
+    # Referidos
+    referrals_sent = Column(Integer, default=0)
+    referrals_converted = Column(Integer, default=0)
+    revenue_from_referrals = Column(Float, default=0)
+    
+    # Totales
+    new_leads_from_content = Column(Integer, default=0)
+    new_leads_from_reviews = Column(Integer, default=0)
+    new_leads_from_referrals = Column(Integer, default=0)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

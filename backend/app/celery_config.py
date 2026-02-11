@@ -24,6 +24,7 @@ celery_app.conf.update(
     timezone=os.getenv("DEFAULT_TIMEZONE", "America/Mexico_City"),
     enable_utc=True,
     beat_schedule={
+        # CORE MODULE
         # Remindy: Check appointments every hour
         "remindy-every-hour": {
             "task": "app.tasks.agents_tasks.run_remindy",
@@ -38,6 +39,22 @@ celery_app.conf.update(
         "brief-every-30-min": {
             "task": "app.tasks.agents_tasks.run_brief",
             "schedule": 1800.0,  # Every 30 minutes
+        },
+        # GROWTH MODULE
+        # ContentAgent: Generate content daily
+        "content-daily": {
+            "task": "app.tasks.agents_tasks.run_content_agent",
+            "schedule": 86400.0,  # Every 24 hours
+        },
+        # ReviewAgent: Request reviews daily
+        "review-daily": {
+            "task": "app.tasks.agents_tasks.run_review_agent",
+            "schedule": 86400.0,  # Every 24 hours
+        },
+        # ReferralAgent: Process referrals daily
+        "referral-daily": {
+            "task": "app.tasks.agents_tasks.run_referral_agent",
+            "schedule": 86400.0,  # Every 24 hours
         },
     }
 )

@@ -3,7 +3,10 @@ Celery tasks for running AI Agents automatically
 """
 from celery import shared_task
 from app.core.database import SessionLocal
-from app.agents import RemindyAgent, FollowupAgent, BriefAgent
+from app.agents import (
+    RemindyAgent, FollowupAgent, BriefAgent,
+    ContentAgent, ReviewAgent, ReferralAgent
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -130,6 +133,96 @@ def run_all_agents():
         return results
     except Exception as exc:
         logger.error(f"Error running all agents: {exc}")
+        raise
+    finally:
+        db.close()
+
+
+# ============================================================================
+# GROWTH MODULE TASKS
+# ============================================================================
+
+@shared_task(bind=True, max_retries=3)
+def run_content_agent(self):
+    """
+    Task to run Content Agent (Growth Module)
+    Generates social media content automatically
+    Runs daily
+    """
+    db = SessionLocal()
+    try:
+        agent = ContentAgent(db)
+        result = agent.run()
+        logger.info(f"ContentAgent completed: {result}")
+        return result
+    except Exception as exc:
+        logger.error(f"ContentAgent failed: {exc}")
+        raise self.retry(exc=exc, countdown=300)
+    finally:
+        db.close()
+
+@shared_task(bind=True, max_retries=3)
+def run_review_agent(self):
+    """
+    Task to run Review Agent (Growth Module)
+    Requests and manages reviews automatically
+    Runs daily
+    """
+    db = SessionLocal()
+    try:
+        agent = ReviewAgent(db)
+        result = agent.run()
+        logger.info(f"ReviewAgent completed: {result}")
+        return result
+    except Exception as exc:
+        logger.error(f"ReviewAgent failed: {exc}")
+        raise self.retry(exc=exc, countdown=300)
+    finally:
+        db.close()
+
+@shared_task(bind=True, max_retries=3)
+def run_referral_agent(self):
+    """
+    Task to run Referral Agent (Growth Module)
+    Manages referral program automatically
+    Runs daily
+    """
+    db = SessionLocal()
+    try:
+        agent = ReferralAgent(db)
+        result = agent.run()
+        logger.info(f"ReferralAgent completed: {result}")
+        return result
+    except Exception as exc:
+        logger.error(f"ReferralAgent failed: {exc}")
+        raise self.retry(exc=exc, countdown=300)
+    finally:
+        db.close()
+
+@shared_task
+def run_all_growth_agents():
+    """
+    Task to run all Growth agents at once
+    """
+    db = SessionLocal()
+    results = {}
+    try:
+        # Run ContentAgent
+        content = ContentAgent(db)
+        results["content"] = content.run()
+        
+        # Run ReviewAgent
+        review = ReviewAgent(db)
+        results["review"] = review.run()
+        
+        # Run ReferralAgent
+        referral = ReferralAgent(db)
+        results["referral"] = referral.run()
+        
+        logger.info(f"All Growth agents completed: {results}")
+        return results
+    except Exception as exc:
+        logger.error(f"Error running Growth agents: {exc}")
         raise
     finally:
         db.close()

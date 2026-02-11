@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api import auth, users, professionals, appointments, leads, availability, dashboard, public, agents
+from app.api import auth, users, professionals, appointments, leads, availability, dashboard, public, agents, growth
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -69,6 +69,7 @@ app.include_router(availability.router, prefix="/api/availability", tags=["Dispo
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(public.router, prefix="/api/public", tags=["Público"])
 app.include_router(agents.router, prefix="/api/agents", tags=["Agentes"])
+app.include_router(growth.router, prefix="/api/growth", tags=["Growth"])
 
 @app.get("/create-demo")
 async def create_demo_user():
