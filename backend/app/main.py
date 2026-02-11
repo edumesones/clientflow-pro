@@ -88,3 +88,38 @@ async def setup_database():
             return {"status": "success", "message": "Database tables created (seed may need manual run)"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+@app.get("/init")
+async def init_db_alternate():
+    """Endpoint alternativo para inicializar la base de datos."""
+    try:
+        # Crear tablas
+        Base.metadata.create_all(bind=engine)
+        
+        # Importar y ejecutar seed
+        from scripts.seed_data import seed_data
+        import io
+        import sys
+        
+        # Capturar el output de seed_data
+        old_stdout = sys.stdout
+        sys.stdout = buffer = io.StringIO()
+        
+        try:
+            seed_data()
+            output = buffer.getvalue()
+            sys.stdout = old_stdout
+            
+            if "Datos de ejemplo cargados" in output or "ya contiene datos" in output:
+                return {"status": "success", "message": "Database initialized with demo data", "details": output}
+            else:
+                return {"status": "success", "message": "Database tables created"}
+        except SystemExit:
+            output = buffer.getvalue()
+            sys.stdout = old_stdout
+            return {"status": "success", "message": "Database initialized", "details": output}
+        except Exception as e:
+            sys.stdout = old_stdout
+            return {"status": "success", "message": "Database tables created (seed may need manual run)"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
