@@ -53,7 +53,7 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-@app.post("/init-db")
+@app.get("/init-db")
 async def init_database():
     """Inicializa la base de datos y crea datos de ejemplo."""
     try:
