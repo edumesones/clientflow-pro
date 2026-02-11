@@ -52,3 +52,27 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+@app.post("/init-db")
+async def init_database():
+    """Inicializa la base de datos y crea datos de ejemplo."""
+    try:
+        # Crear tablas
+        Base.metadata.create_all(bind=engine)
+        
+        # Importar y ejecutar seed
+        from scripts.seed_data import seed_database
+        from app.core.database import SessionLocal
+        db = SessionLocal()
+        try:
+            seed_database(db)
+            db.commit()
+            return {"status": "success", "message": "Database initialized with demo data"}
+        except Exception as e:
+            db.rollback()
+            # Si ya existe el usuario, está bien
+            return {"status": "success", "message": "Database already initialized"}
+        finally:
+            db.close()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
