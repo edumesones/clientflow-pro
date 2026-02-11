@@ -9,9 +9,36 @@ from app.api import auth, users, professionals, appointments, leads, availabilit
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Crear tablas al iniciar (en desarrollo)
-    if settings.DEBUG:
-        Base.metadata.create_all(bind=engine)
+    # Crear tablas al iniciar
+    Base.metadata.create_all(bind=engine)
+    
+    # Auto-seed en producción si está habilitado
+    if os.getenv("AUTO_SEED", "false").lower() == "true":
+        try:
+            from app.core.database import SessionLocal
+            from app.core.security import get_password_hash
+            from app.models.models import User, UserRole
+            
+            db = SessionLocal()
+            try:
+                # Verificar si existe usuario demo
+                existing = db.query(User).filter(User.email == "demo@clientflow.pro").first()
+                if not existing:
+                    user = User(
+                        email="demo@clientflow.pro",
+                        hashed_password=get_password_hash("demo123"),
+                        full_name="Dr. Ana García",
+                        role=UserRole.PROFESSIONAL,
+                        is_active=True
+                    )
+                    db.add(user)
+                    db.commit()
+                    print("✅ Usuario demo creado automáticamente")
+            finally:
+                db.close()
+        except Exception as e:
+            print(f"⚠️ Error en auto-seed: {e}")
+    
     yield
     # Cleanup al cerrar (si es necesario)
 
@@ -70,7 +97,7 @@ async def setup_database():
         sys.stdout = buffer = io.StringIO()
         
         try:
-            seed_data()
+            seed_data(force=True)
             output = buffer.getvalue()
             sys.stdout = old_stdout
             
