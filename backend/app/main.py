@@ -22,10 +22,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS
+# CORS - Usar configuración desde settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=settings.CORS_ORIGINS_LIST,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

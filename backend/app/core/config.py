@@ -61,6 +61,13 @@ class Settings(BaseSettings):
     REMINDER_24H_HOURS: int = 24
     REMINDER_1H_HOURS: int = 1
     
+    # CORS - Orígenes permitidos (separados por comas)
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
+    
+    @property
+    def CORS_ORIGINS_LIST(self):
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
