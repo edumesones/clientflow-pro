@@ -133,7 +133,7 @@ async def init_db_alternate():
         sys.stdout = buffer = io.StringIO()
         
         try:
-            seed_data()
+            seed_data(force=True)
             output = buffer.getvalue()
             sys.stdout = old_stdout
             

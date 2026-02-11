@@ -21,7 +21,7 @@ from app.models.models import (
     ClientNote
 )
 
-def seed_data():
+def seed_data(force=False):
     print("🌱 Cargando datos de ejemplo...")
     print("=" * 50)
     
@@ -31,10 +31,14 @@ def seed_data():
         # Verificar si ya hay datos
         if db.query(User).first():
             print("⚠️  La base de datos ya contiene datos.")
-            response = input("¿Deseas borrar todo y recargar? (s/N): ")
-            if response.lower() != 's':
-                print("Cancelado.")
-                return
+            # En entorno no-interactivo o con force=True, borrar y recargar
+            if force or not sys.stdin.isatty():
+                print("Modo no-interactivo detectado, recargando datos...")
+            else:
+                response = input("¿Deseas borrar todo y recargar? (s/N): ")
+                if response.lower() != 's':
+                    print("Cancelado.")
+                    return
             
             # Borrar datos existentes
             db.query(ClientNote).delete()
