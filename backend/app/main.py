@@ -68,6 +68,42 @@ app.include_router(availability.router, prefix="/api/availability", tags=["Dispo
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(public.router, prefix="/api/public", tags=["Público"])
 
+@app.get("/create-demo")
+async def create_demo_user():
+    """Crea el usuario demo directamente."""
+    try:
+        from app.core.database import SessionLocal
+        from app.core.security import get_password_hash
+        from app.models.models import User, UserRole
+        from sqlalchemy import select
+        
+        db = SessionLocal()
+        try:
+            # Verificar si ya existe
+            result = db.execute(select(User).where(User.email == "demo@clientflow.pro"))
+            existing = result.scalar_one_or_none()
+            
+            if existing:
+                return {"status": "exists", "message": "User demo@clientflow.pro already exists"}
+            
+            # Crear usuario
+            user = User(
+                email="demo@clientflow.pro",
+                hashed_password=get_password_hash("demo123"),
+                full_name="Dr. Ana García",
+                role=UserRole.PROFESSIONAL,
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            
+            return {"status": "success", "message": "Demo user created", "email": "demo@clientflow.pro", "password": "demo123"}
+        finally:
+            db.close()
+    except Exception as e:
+        import traceback
+        return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
+
 @app.get("/")
 async def root():
     return {
