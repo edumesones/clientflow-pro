@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -5,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api import auth, users, professionals, appointments, leads, availability, dashboard, public
+from app.api import auth, users, professionals, appointments, leads, availability, dashboard, public, agents
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -67,6 +68,7 @@ app.include_router(leads.router, prefix="/api/leads", tags=["Leads"])
 app.include_router(availability.router, prefix="/api/availability", tags=["Disponibilidad"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(public.router, prefix="/api/public", tags=["Público"])
+app.include_router(agents.router, prefix="/api/agents", tags=["Agentes"])
 
 @app.get("/create-demo")
 async def create_demo_user():
