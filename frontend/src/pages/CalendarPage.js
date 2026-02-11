@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Calendar from 'react-calendar';
-import { appointmentsAPI, availabilityAPI } from '../services/apiService';
+import { appointmentsAPI } from '../services/apiService';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarPage.css';
 
@@ -9,13 +9,8 @@ const CalendarPage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState(null);
 
-  useEffect(() => {
-    fetchAppointments();
-  }, [selectedDate]);
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     try {
       const startOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
       const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
@@ -31,7 +26,11 @@ const CalendarPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedDate]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   const getAppointmentsForDate = (date) => {
     const dateStr = date.toISOString().split('T')[0];
@@ -132,6 +131,15 @@ const CalendarPage = () => {
           )}
         </div>
       </div>
+
+      {showModal && (
+        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Citas para {formatDate(selectedDate)}</h3>
+            <button onClick={() => setShowModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
