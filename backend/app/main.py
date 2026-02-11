@@ -61,18 +61,30 @@ async def init_database():
         Base.metadata.create_all(bind=engine)
         
         # Importar y ejecutar seed
-        from scripts.seed_data import seed_database
-        from app.core.database import SessionLocal
-        db = SessionLocal()
+        from scripts.seed_data import seed_data
+        import io
+        import sys
+        
+        # Capturar el output de seed_data
+        old_stdout = sys.stdout
+        sys.stdout = buffer = io.StringIO()
+        
         try:
-            seed_database(db)
-            db.commit()
-            return {"status": "success", "message": "Database initialized with demo data"}
+            seed_data()
+            output = buffer.getvalue()
+            sys.stdout = old_stdout
+            
+            if "Datos de ejemplo cargados" in output or "ya contiene datos" in output:
+                return {"status": "success", "message": "Database initialized with demo data", "details": output}
+            else:
+                return {"status": "success", "message": "Database tables created"}
+        except SystemExit:
+            # seed_data puede llamar a sys.exit
+            output = buffer.getvalue()
+            sys.stdout = old_stdout
+            return {"status": "success", "message": "Database initialized", "details": output}
         except Exception as e:
-            db.rollback()
-            # Si ya existe el usuario, está bien
-            return {"status": "success", "message": "Database already initialized"}
-        finally:
-            db.close()
+            sys.stdout = old_stdout
+            return {"status": "success", "message": "Database tables created (seed may need manual run)"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
