@@ -1,0 +1,15 @@
+.App {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+}
+
+.admin-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+}
+
+.admin-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
