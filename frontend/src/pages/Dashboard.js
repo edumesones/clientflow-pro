@@ -15,17 +15,23 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      console.log('Fetching dashboard data...');
       const [statsRes, upcomingRes, leadsRes] = await Promise.all([
         dashboardAPI.getStats(),
         dashboardAPI.getUpcoming(5),
         dashboardAPI.getRecentLeads(5),
       ]);
       
+      console.log('Stats:', statsRes.data);
+      console.log('Upcoming:', upcomingRes.data);
+      console.log('Leads:', leadsRes.data);
+      
       setStats(statsRes.data);
       setUpcoming(upcomingRes.data);
       setRecentLeads(leadsRes.data);
     } catch (error) {
       console.error('Error fetching dashboard:', error);
+      console.error('Error details:', error.response?.data);
     } finally {
       setLoading(false);
     }
@@ -87,7 +93,7 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <div className="card-header">
             <h2>Próximas citas</h2>
-            <a href="/admin/calendar" className="view-all">Ver todas</a>
+            <a href="/calendar" className="view-all">Ver todas</a>
           </div>
           
           {upcoming.length === 0 ? (
@@ -114,7 +120,7 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <div className="card-header">
             <h2>Leads recientes</h2>
-            <a href="/admin/leads" className="view-all">Ver todos</a>
+            <a href="/leads" className="view-all">Ver todos</a>
           </div>
           
           {recentLeads.length === 0 ? (
