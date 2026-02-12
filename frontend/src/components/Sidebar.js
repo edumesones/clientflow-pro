@@ -8,10 +8,11 @@ const Sidebar = () => {
   const menuItems = [
     { path: '/dashboard', icon: '📊', label: 'Dashboard' },
     { path: '/calendar', icon: '📅', label: 'Calendario' },
-    { path: '/appointments', icon: '📆', label: 'Citas' },
-    { path: '/leads', icon: '🎯', label: 'Leads' },
-    { path: '/clients', icon: '👥', label: 'Clientes' },
-    { path: '/settings', icon: '⚙️', label: 'Configuración' },
+    // TODO: Implementar páginas
+    // { path: '/appointments', icon: '📆', label: 'Citas' },
+    // { path: '/leads', icon: '🎯', label: 'Leads' },
+    // { path: '/clients', icon: '👥', label: 'Clientes' },
+    // { path: '/settings', icon: '⚙️', label: 'Configuración' },
   ];
 
   return (

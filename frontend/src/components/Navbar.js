@@ -25,7 +25,6 @@ const Navbar = () => {
               <>
                 <Link to="/dashboard">Dashboard</Link>
                 <Link to="/calendar">Calendario</Link>
-                <Link to="/leads">Leads</Link>
               </>
             )}
             <div className="navbar-user">
