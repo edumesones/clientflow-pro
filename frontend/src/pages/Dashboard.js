@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import StatCard from '../components/StatCard';
 import { dashboardAPI } from '../services/apiService';
 import './Dashboard.css';
@@ -93,7 +94,7 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <div className="card-header">
             <h2>Próximas citas</h2>
-            <a href="/calendar" className="view-all">Ver todas</a>
+            <Link to="/calendar" className="view-all">Ver todas</Link>
           </div>
           
           {upcoming.length === 0 ? (
@@ -120,7 +121,7 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <div className="card-header">
             <h2>Leads recientes</h2>
-            <a href="/leads" className="view-all">Ver todos</a>
+            <span className="view-all" style={{opacity: 0.5, cursor: 'not-allowed'}} title="Próximamente">Ver todos</span>
           </div>
           
           {recentLeads.length === 0 ? (
