@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Force rebuild: 2025-01-20 cache bust
+# Force rebuild: 2026-02-12 cache bust
 
 # Copiar solo requirements primero (cache layer)
 COPY backend/requirements.txt .
