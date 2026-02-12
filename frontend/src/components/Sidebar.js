@@ -6,12 +6,12 @@ const Sidebar = () => {
   const location = useLocation();
   
   const menuItems = [
-    { path: '/admin', icon: '📊', label: 'Dashboard' },
-    { path: '/admin/calendar', icon: '📅', label: 'Calendario' },
-    { path: '/admin/appointments', icon: '📆', label: 'Citas' },
-    { path: '/admin/leads', icon: '🎯', label: 'Leads' },
-    { path: '/admin/clients', icon: '👥', label: 'Clientes' },
-    { path: '/admin/settings', icon: '⚙️', label: 'Configuración' },
+    { path: '/dashboard', icon: '📊', label: 'Dashboard' },
+    { path: '/calendar', icon: '📅', label: 'Calendario' },
+    { path: '/appointments', icon: '📆', label: 'Citas' },
+    { path: '/leads', icon: '🎯', label: 'Leads' },
+    { path: '/clients', icon: '👥', label: 'Clientes' },
+    { path: '/settings', icon: '⚙️', label: 'Configuración' },
   ];
 
   return (

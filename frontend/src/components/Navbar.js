@@ -23,9 +23,9 @@ const Navbar = () => {
           <>
             {isProfessional() && (
               <>
-                <Link to="/admin">Dashboard</Link>
-                <Link to="/admin/calendar">Calendario</Link>
-                <Link to="/admin/leads">Leads</Link>
+                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/calendar">Calendario</Link>
+                <Link to="/leads">Leads</Link>
               </>
             )}
             <div className="navbar-user">
