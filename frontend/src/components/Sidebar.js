@@ -10,9 +10,10 @@ const Sidebar = () => {
     { path: '/calendar', icon: '📅', label: 'Calendario' },
     { path: '/appointments', icon: '📆', label: 'Citas' },
     { path: '/leads', icon: '🎯', label: 'Leads' },
-    // TODO: Implementar en Fase 2
-    // { path: '/clients', icon: '👥', label: 'Clientes' },
-    // { path: '/settings', icon: '⚙️', label: 'Configuración' },
+    { path: '/clients', icon: '👥', label: 'Clientes' },
+    { path: '/availability', icon: '🕐', label: 'Horarios' },
+    { path: '/profile', icon: '👤', label: 'Mi Perfil' },
+    { path: '/settings', icon: '⚙️', label: 'Configuración' },
   ];
 
   return (

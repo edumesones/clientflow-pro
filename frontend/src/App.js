@@ -9,6 +9,10 @@ import Dashboard from './pages/Dashboard';
 import Calendar from './pages/CalendarPage';
 import AppointmentsPage from './pages/AppointmentsPage';
 import LeadsPage from './pages/LeadsPage';
+import AvailabilityPage from './pages/AvailabilityPage';
+import ProfilePage from './pages/ProfilePage';
+import ClientsPage from './pages/ClientsPage';
+import SettingsPage from './pages/SettingsPage';
 
 function App() {
   const { user } = useAuth();
@@ -35,6 +39,10 @@ function App() {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/appointments" element={<AppointmentsPage />} />
             <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/availability" element={<AvailabilityPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/clients" element={<ClientsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </main>

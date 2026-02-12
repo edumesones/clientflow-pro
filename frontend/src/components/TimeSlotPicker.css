@@ -1,0 +1,130 @@
+.time-slot-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slots-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.no-slots {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-style: italic;
+  margin: 8px 0;
+}
+
+.slot-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.slot-row.slot-overlap {
+  border-color: #dc2626;
+  background: #fee2e2;
+}
+
+.slot-inputs {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-input-group label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-width: 50px;
+}
+
+.time-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 100px;
+}
+
+.time-select:hover {
+  border-color: var(--primary-color);
+}
+
+.time-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.time-separator {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.overlap-warning {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.add-slot-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .slot-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .slot-inputs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .time-input-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .time-input-group label {
+    min-width: auto;
+  }
+
+  .time-select {
+    width: 100%;
+  }
+
+  .time-separator {
+    display: none;
+  }
+
+  .overlap-warning {
+    font-size: 11px;
+  }
+}
