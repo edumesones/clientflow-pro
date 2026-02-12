@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
         try:
             from app.core.database import SessionLocal
             from app.core.security import get_password_hash
-            from app.models.models import User, UserRole
+            from app.models.models import User, UserRole, Professional
             
             db = SessionLocal()
             try:
@@ -34,7 +34,21 @@ async def lifespan(app: FastAPI):
                     )
                     db.add(user)
                     db.commit()
-                    print("✅ Usuario demo creado automáticamente")
+                    db.refresh(user)
+                    
+                    # Crear perfil profesional
+                    professional = Professional(
+                        user_id=user.id,
+                        slug="dr-ana-garcia",
+                        bio="Especialista en consultoría profesional con más de 10 años de experiencia.",
+                        specialty="Consultoría Profesional",
+                        timezone="America/Mexico_City",
+                        appointment_duration=60,
+                        is_accepting_appointments=True
+                    )
+                    db.add(professional)
+                    db.commit()
+                    print("✅ Usuario demo y perfil profesional creados automáticamente")
             finally:
                 db.close()
         except Exception as e:
@@ -99,8 +113,23 @@ async def create_demo_user():
             )
             db.add(user)
             db.commit()
+            db.refresh(user)
             
-            return {"status": "success", "message": "Demo user created", "email": "demo@clientflow.pro", "password": "demo123"}
+            # Crear perfil profesional
+            from app.models.models import Professional
+            professional = Professional(
+                user_id=user.id,
+                slug="dr-ana-garcia",
+                bio="Especialista en consultoría profesional con más de 10 años de experiencia.",
+                specialty="Consultoría Profesional",
+                timezone="America/Mexico_City",
+                appointment_duration=60,
+                is_accepting_appointments=True
+            )
+            db.add(professional)
+            db.commit()
+            
+            return {"status": "success", "message": "Demo user and professional profile created", "email": "demo@clientflow.pro", "password": "demo123"}
         finally:
             db.close()
     except Exception as e:
