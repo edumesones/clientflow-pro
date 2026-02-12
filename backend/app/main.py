@@ -91,17 +91,34 @@ async def create_demo_user():
     try:
         from app.core.database import SessionLocal
         from app.core.security import get_password_hash
-        from app.models.models import User, UserRole
+        from app.models.models import User, UserRole, Professional
         from sqlalchemy import select
         
         db = SessionLocal()
         try:
-            # Verificar si ya existe
+            # Verificar si ya existe el usuario
             result = db.execute(select(User).where(User.email == "demo@clientflow.pro"))
-            existing = result.scalar_one_or_none()
+            existing_user = result.scalar_one_or_none()
             
-            if existing:
-                return {"status": "exists", "message": "User demo@clientflow.pro already exists"}
+            if existing_user:
+                # Verificar si tiene perfil profesional
+                existing_profile = db.query(Professional).filter(Professional.user_id == existing_user.id).first()
+                if existing_profile:
+                    return {"status": "exists", "message": "User demo@clientflow.pro and professional profile already exist"}
+                else:
+                    # Crear perfil profesional faltante
+                    professional = Professional(
+                        user_id=existing_user.id,
+                        slug="dr-ana-garcia",
+                        bio="Especialista en consultoría profesional con más de 10 años de experiencia.",
+                        specialty="Consultoría Profesional",
+                        timezone="America/Mexico_City",
+                        appointment_duration=60,
+                        is_accepting_appointments=True
+                    )
+                    db.add(professional)
+                    db.commit()
+                    return {"status": "updated", "message": "Professional profile created for existing demo user"}
             
             # Crear usuario
             user = User(
@@ -116,7 +133,6 @@ async def create_demo_user():
             db.refresh(user)
             
             # Crear perfil profesional
-            from app.models.models import Professional
             professional = Professional(
                 user_id=user.id,
                 slug="dr-ana-garcia",
