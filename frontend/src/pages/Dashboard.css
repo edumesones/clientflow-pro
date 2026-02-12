@@ -83,6 +83,17 @@
   border-radius: var(--radius);
 }
 
+.appointment-item.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.appointment-item.clickable:hover {
+  background: var(--bg-hover, #f9fafb);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
 .appointment-info h4 {
   font-size: 15px;
   color: var(--text-primary);
@@ -147,6 +158,17 @@
   padding: 16px;
   background: var(--bg-secondary);
   border-radius: var(--radius);
+}
+
+.lead-item.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lead-item.clickable:hover {
+  background: var(--bg-hover, #f9fafb);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .lead-info h4 {

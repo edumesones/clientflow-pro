@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Calendar from 'react-calendar';
 import { appointmentsAPI } from '../services/apiService';
+import AppointmentForm from '../components/AppointmentForm';
+import AppointmentDetailModal from '../components/AppointmentDetailModal';
+import Button from '../components/Button';
 import 'react-calendar/dist/Calendar.css';
 import './CalendarPage.css';
 
@@ -8,7 +11,10 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [showAppointmentDetail, setShowAppointmentDetail] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [formMode, setFormMode] = useState('create');
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -39,7 +45,42 @@ const CalendarPage = () => {
 
   const handleDateClick = (date) => {
     setSelectedDate(date);
-    setShowModal(true);
+  };
+
+  const handleNewAppointment = () => {
+    setSelectedAppointment(null);
+    setFormMode('create');
+    setShowAppointmentForm(true);
+  };
+
+  const handleAppointmentClick = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowAppointmentDetail(true);
+  };
+
+  const handleEditAppointment = (appointment) => {
+    setSelectedAppointment(appointment);
+    setFormMode('edit');
+    setShowAppointmentDetail(false);
+    setShowAppointmentForm(true);
+  };
+
+  const handleDeleteAppointment = async (appointmentId) => {
+    if (window.confirm('¿Estás seguro de que deseas cancelar esta cita?')) {
+      try {
+        await appointmentsAPI.cancel(appointmentId);
+        fetchAppointments();
+      } catch (error) {
+        console.error('Error canceling appointment:', error);
+        alert('Error al cancelar la cita');
+      }
+    }
+  };
+
+  const handleFormSuccess = () => {
+    setShowAppointmentForm(false);
+    setSelectedAppointment(null);
+    fetchAppointments();
   };
 
   const tileContent = ({ date, view }) => {
@@ -73,7 +114,12 @@ const CalendarPage = () => {
 
   return (
     <div className="calendar-page">
-      <h1>Calendario de Citas</h1>
+      <div className="calendar-header">
+        <h1>Calendario de Citas</h1>
+        <Button variant="primary" onClick={handleNewAppointment}>
+          Nueva Cita
+        </Button>
+      </div>
       
       <div className="calendar-container">
         <div className="calendar-wrapper">
@@ -115,7 +161,11 @@ const CalendarPage = () => {
                 <p className="no-appointments">No hay citas para este día</p>
               ) : (
                 getAppointmentsForDate(selectedDate).map((appt) => (
-                  <div key={appt.id} className={`day-appointment-item status-${appt.status}`}>
+                  <div
+                    key={appt.id}
+                    className={`day-appointment-item status-${appt.status} clickable`}
+                    onClick={() => handleAppointmentClick(appt)}
+                  >
                     <div className="appointment-time">{appt.start_time}</div>
                     <div className="appointment-details">
                       <h4>{appt.client?.full_name || appt.lead_name || 'Sin nombre'}</h4>
@@ -132,13 +182,31 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {showModal && (
-        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Citas para {formatDate(selectedDate)}</h3>
-            <button onClick={() => setShowModal(false)}>Cerrar</button>
-          </div>
-        </div>
+      {showAppointmentForm && (
+        <AppointmentForm
+          isOpen={showAppointmentForm}
+          onClose={() => {
+            setShowAppointmentForm(false);
+            setSelectedAppointment(null);
+          }}
+          appointment={formMode === 'edit' ? selectedAppointment : null}
+          initialDate={selectedDate.toISOString().split('T')[0]}
+          onSuccess={handleFormSuccess}
+        />
+      )}
+
+      {selectedAppointment && showAppointmentDetail && (
+        <AppointmentDetailModal
+          isOpen={showAppointmentDetail}
+          onClose={() => {
+            setShowAppointmentDetail(false);
+            setSelectedAppointment(null);
+          }}
+          appointment={selectedAppointment}
+          onEdit={() => handleEditAppointment(selectedAppointment)}
+          onDelete={() => handleDeleteAppointment(selectedAppointment.id)}
+          onRefresh={fetchAppointments}
+        />
       )}
     </div>
   );

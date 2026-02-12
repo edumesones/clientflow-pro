@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import StatCard from '../components/StatCard';
+import AppointmentDetailModal from '../components/AppointmentDetailModal';
+import LeadDetailModal from '../components/LeadDetailModal';
 import { dashboardAPI } from '../services/apiService';
 import './Dashboard.css';
 
@@ -9,6 +11,10 @@ const Dashboard = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [recentLeads, setRecentLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [showAppointmentDetail, setShowAppointmentDetail] = useState(false);
+  const [showLeadDetail, setShowLeadDetail] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -102,7 +108,14 @@ const Dashboard = () => {
           ) : (
             <div className="appointments-list">
               {upcoming.map((appt) => (
-                <div key={appt.id} className="appointment-item">
+                <div
+                  key={appt.id}
+                  className="appointment-item clickable"
+                  onClick={() => {
+                    setSelectedAppointment(appt);
+                    setShowAppointmentDetail(true);
+                  }}
+                >
                   <div className="appointment-info">
                     <h4>{appt.client_name}</h4>
                     <p>{appt.service_type || 'Consulta general'}</p>
@@ -121,7 +134,7 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <div className="card-header">
             <h2>Leads recientes</h2>
-            <span className="view-all" style={{opacity: 0.5, cursor: 'not-allowed'}} title="Próximamente">Ver todos</span>
+            <Link to="/leads" className="view-all">Ver todos</Link>
           </div>
           
           {recentLeads.length === 0 ? (
@@ -129,7 +142,14 @@ const Dashboard = () => {
           ) : (
             <div className="leads-list">
               {recentLeads.map((lead) => (
-                <div key={lead.id} className="lead-item">
+                <div
+                  key={lead.id}
+                  className="lead-item clickable"
+                  onClick={() => {
+                    setSelectedLead(lead);
+                    setShowLeadDetail(true);
+                  }}
+                >
                   <div className="lead-info">
                     <h4>{lead.name}</h4>
                     <p>{lead.email}</p>
@@ -143,6 +163,29 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      {selectedAppointment && (
+        <AppointmentDetailModal
+          isOpen={showAppointmentDetail}
+          onClose={() => setShowAppointmentDetail(false)}
+          appointment={selectedAppointment}
+          onEdit={() => {}}
+          onDelete={() => {}}
+          onRefresh={fetchDashboardData}
+        />
+      )}
+
+      {selectedLead && (
+        <LeadDetailModal
+          isOpen={showLeadDetail}
+          onClose={() => setShowLeadDetail(false)}
+          lead={selectedLead}
+          onEdit={() => {}}
+          onDelete={() => {}}
+          onRefresh={fetchDashboardData}
+        />
+      )}
     </div>
   );
 };

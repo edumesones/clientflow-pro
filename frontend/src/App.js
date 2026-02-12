@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Calendar from './pages/CalendarPage';
+import AppointmentsPage from './pages/AppointmentsPage';
+import LeadsPage from './pages/LeadsPage';
 
 function App() {
   const { user } = useAuth();
@@ -31,6 +33,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/calendar" element={<Calendar />} />
+            <Route path="/appointments" element={<AppointmentsPage />} />
+            <Route path="/leads" element={<LeadsPage />} />
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </main>

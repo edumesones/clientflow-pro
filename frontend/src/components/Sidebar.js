@@ -8,9 +8,9 @@ const Sidebar = () => {
   const menuItems = [
     { path: '/dashboard', icon: '📊', label: 'Dashboard' },
     { path: '/calendar', icon: '📅', label: 'Calendario' },
-    // TODO: Implementar páginas
-    // { path: '/appointments', icon: '📆', label: 'Citas' },
-    // { path: '/leads', icon: '🎯', label: 'Leads' },
+    { path: '/appointments', icon: '📆', label: 'Citas' },
+    { path: '/leads', icon: '🎯', label: 'Leads' },
+    // TODO: Implementar en Fase 2
     // { path: '/clients', icon: '👥', label: 'Clientes' },
     // { path: '/settings', icon: '⚙️', label: 'Configuración' },
   ];

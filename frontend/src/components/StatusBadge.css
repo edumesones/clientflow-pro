@@ -1,0 +1,78 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+/* Appointment statuses */
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-confirmed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-noshow {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Lead statuses */
+.status-new {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.status-contacted {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-converted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-lost {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Client statuses */
+.status-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-inactive {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.status-vip {
+  background: #fce7f3;
+  color: #9f1239;
+}
+
+/* Default fallback */
+.status-default {
+  background: #f3f4f6;
+  color: #4b5563;
+}
