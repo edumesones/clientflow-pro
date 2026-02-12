@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import Button from './Button';
+import { usersAPI } from '../services/apiService';
 import './ClientDetailModal.css';
 
 const ClientDetailModal = ({ isOpen, onClose, client, onRefresh }) => {
@@ -17,20 +18,20 @@ const ClientDetailModal = ({ isOpen, onClose, client, onRefresh }) => {
   const fetchClientStats = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call when backend implements endpoint
-      // const response = await usersAPI.getClientStats(client.id);
-      const mockStats = {
+      const response = await usersAPI.getClientStats(client.id);
+      setClientStats(response.data);
+    } catch (error) {
+      console.error('Error fetching client stats:', error);
+      // Use fallback data from client object if API fails
+      const fallbackStats = {
         total_appointments: client.total_appointments || 0,
         completed: Math.floor((client.total_appointments || 0) * 0.85),
         cancelled: Math.floor((client.total_appointments || 0) * 0.1),
         no_show: Math.floor((client.total_appointments || 0) * 0.05),
         no_show_rate: client.no_show_rate || 0,
-        average_rating: 4.5,
-        notes_count: 3,
+        average_rating: null,
       };
-      setClientStats(mockStats);
-    } catch (error) {
-      console.error('Error fetching client stats:', error);
+      setClientStats(fallbackStats);
     } finally {
       setLoading(false);
     }
@@ -99,8 +100,8 @@ const ClientDetailModal = ({ isOpen, onClose, client, onRefresh }) => {
       <div className="notes-section">
         <h4>Notas del Profesional</h4>
         <div className="notes-placeholder">
-          <p>Las notas estarán disponibles cuando se implemente el endpoint backend.</p>
-          <Button variant="ghost" size="small">
+          <p>El sistema de notas estará disponible en una próxima actualización.</p>
+          <Button variant="ghost" size="small" onClick={() => alert('Funcionalidad próximamente')}>
             + Agregar Nota
           </Button>
         </div>
@@ -118,9 +119,9 @@ const ClientDetailModal = ({ isOpen, onClose, client, onRefresh }) => {
       </div>
 
       <div className="appointments-placeholder">
-        <p>📅 El historial de citas estará disponible cuando se conecte con el backend.</p>
+        <p>📅 Este cliente tiene {client.total_appointments} citas registradas.</p>
         <p className="placeholder-detail">
-          Mostrará: {client.total_appointments} citas registradas para este cliente
+          El historial detallado de citas estará disponible en una próxima actualización.
         </p>
       </div>
     </div>

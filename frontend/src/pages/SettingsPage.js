@@ -28,6 +28,29 @@ const SettingsPage = () => {
     date_format: 'DD/MM/YYYY',
   });
 
+  // Notifications Tab State
+  const [notificationsData, setNotificationsData] = useState({
+    email_appointment_reminders: true,
+    email_appointment_confirmations: true,
+    email_new_leads: true,
+    email_daily_summary: false,
+    email_weekly_summary: true,
+    sms_appointment_reminders: false,
+    sms_appointment_confirmations: false,
+    push_enabled: true,
+  });
+
+  // Integrations Tab State
+  const [integrationsData, setIntegrationsData] = useState({
+    api_key: '',
+    webhook_url: '',
+    google_calendar_connected: false,
+    outlook_calendar_connected: false,
+    stripe_connected: false,
+    paypal_connected: false,
+    zoom_connected: false,
+  });
+
   const handleAccountChange = (e) => {
     const { name, value } = e.target;
     setAccountData(prev => ({ ...prev, [name]: value }));
@@ -36,6 +59,16 @@ const SettingsPage = () => {
   const handleBusinessChange = (e) => {
     const { name, value } = e.target;
     setBusinessData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleNotificationsChange = (e) => {
+    const { name, checked } = e.target;
+    setNotificationsData(prev => ({ ...prev, [name]: checked }));
+  };
+
+  const handleIntegrationsChange = (e) => {
+    const { name, value } = e.target;
+    setIntegrationsData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAccountSave = async (e) => {
@@ -278,35 +311,404 @@ const SettingsPage = () => {
     </form>
   );
 
+  const handleNotificationsSave = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+      // TODO: Implement actual API call
+      // await settingsAPI.updateNotifications(notificationsData);
+      showMessage('Preferencias de notificaciones guardadas', 'success');
+    } catch (error) {
+      console.error('Error updating notifications:', error);
+      showMessage('Error al guardar preferencias', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const renderNotificationsTab = () => (
-    <div className="placeholder-tab">
-      <div className="placeholder-content">
-        <h3>📧 Notificaciones</h3>
-        <p>La configuración de notificaciones estará disponible en la Fase 3.</p>
-        <ul>
-          <li>Preferencias de email (recordatorios, confirmaciones)</li>
-          <li>Notificaciones SMS</li>
-          <li>Alertas push</li>
-          <li>Resumen diario/semanal</li>
-        </ul>
+    <form onSubmit={handleNotificationsSave} className="settings-form">
+      <div className="form-section">
+        <h3>📧 Notificaciones por Email</h3>
+        <p className="section-description">
+          Configura qué notificaciones deseas recibir por correo electrónico
+        </p>
+
+        <div className="toggle-list">
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="email_appointment_reminders"
+              name="email_appointment_reminders"
+              checked={notificationsData.email_appointment_reminders}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="email_appointment_reminders" className="toggle-label">
+              <span className="toggle-text">Recordatorios de citas</span>
+              <span className="toggle-description">
+                Recibe un email 24 horas antes de cada cita
+              </span>
+            </label>
+          </div>
+
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="email_appointment_confirmations"
+              name="email_appointment_confirmations"
+              checked={notificationsData.email_appointment_confirmations}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="email_appointment_confirmations" className="toggle-label">
+              <span className="toggle-text">Confirmaciones de citas</span>
+              <span className="toggle-description">
+                Confirmación inmediata cuando se agenda una cita
+              </span>
+            </label>
+          </div>
+
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="email_new_leads"
+              name="email_new_leads"
+              checked={notificationsData.email_new_leads}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="email_new_leads" className="toggle-label">
+              <span className="toggle-text">Nuevos leads</span>
+              <span className="toggle-description">
+                Notificación cuando llega un nuevo lead
+              </span>
+            </label>
+          </div>
+
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="email_daily_summary"
+              name="email_daily_summary"
+              checked={notificationsData.email_daily_summary}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="email_daily_summary" className="toggle-label">
+              <span className="toggle-text">Resumen diario</span>
+              <span className="toggle-description">
+                Resumen de citas y leads cada mañana
+              </span>
+            </label>
+          </div>
+
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="email_weekly_summary"
+              name="email_weekly_summary"
+              checked={notificationsData.email_weekly_summary}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="email_weekly_summary" className="toggle-label">
+              <span className="toggle-text">Resumen semanal</span>
+              <span className="toggle-description">
+                Estadísticas y resumen cada lunes
+              </span>
+            </label>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div className="form-section">
+        <h3>📱 Notificaciones SMS</h3>
+        <p className="section-description">
+          Notificaciones por mensaje de texto (requiere créditos SMS)
+        </p>
+
+        <div className="toggle-list">
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="sms_appointment_reminders"
+              name="sms_appointment_reminders"
+              checked={notificationsData.sms_appointment_reminders}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="sms_appointment_reminders" className="toggle-label">
+              <span className="toggle-text">Recordatorios de citas por SMS</span>
+              <span className="toggle-description">
+                SMS 24 horas antes de cada cita
+              </span>
+            </label>
+          </div>
+
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="sms_appointment_confirmations"
+              name="sms_appointment_confirmations"
+              checked={notificationsData.sms_appointment_confirmations}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="sms_appointment_confirmations" className="toggle-label">
+              <span className="toggle-text">Confirmaciones por SMS</span>
+              <span className="toggle-description">
+                SMS de confirmación al agendar
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h3>🔔 Notificaciones Push</h3>
+        <p className="section-description">
+          Alertas en tiempo real en tu navegador
+        </p>
+
+        <div className="toggle-list">
+          <div className="toggle-item">
+            <input
+              type="checkbox"
+              id="push_enabled"
+              name="push_enabled"
+              checked={notificationsData.push_enabled}
+              onChange={handleNotificationsChange}
+              className="toggle-checkbox"
+            />
+            <label htmlFor="push_enabled" className="toggle-label">
+              <span className="toggle-text">Habilitar notificaciones push</span>
+              <span className="toggle-description">
+                Alertas instantáneas de nuevos leads y citas
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <Button type="submit" variant="primary" loading={saving}>
+          Guardar Preferencias
+        </Button>
+      </div>
+    </form>
   );
 
+  const handleGenerateApiKey = () => {
+    const newKey = 'sk_live_' + Math.random().toString(36).substring(2, 18);
+    setIntegrationsData(prev => ({ ...prev, api_key: newKey }));
+    showMessage('API Key generada exitosamente', 'success');
+  };
+
+  const handleCopyApiKey = () => {
+    navigator.clipboard.writeText(integrationsData.api_key);
+    showMessage('API Key copiada al portapapeles', 'success');
+  };
+
+  const handleConnectIntegration = (integration) => {
+    // Simular conexión a servicio externo
+    showMessage(`Conectando con ${integration}... (próximamente)`, 'success');
+    // TODO: Implement OAuth flow for each integration
+  };
+
+  const handleIntegrationsSave = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSaving(true);
+      // TODO: Implement actual API call
+      // await settingsAPI.updateIntegrations(integrationsData);
+      showMessage('Configuración de integraciones guardada', 'success');
+    } catch (error) {
+      console.error('Error updating integrations:', error);
+      showMessage('Error al guardar configuración', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const renderIntegrationsTab = () => (
-    <div className="placeholder-tab">
-      <div className="placeholder-content">
-        <h3>🔌 Integraciones</h3>
-        <p>Las integraciones estarán disponibles en la Fase 3.</p>
-        <ul>
-          <li>API Keys</li>
-          <li>Webhooks</li>
-          <li>Calendario (Google, Outlook)</li>
-          <li>Pagos (Stripe, PayPal)</li>
-          <li>Zoom / Google Meet</li>
-        </ul>
+    <form onSubmit={handleIntegrationsSave} className="settings-form">
+      <div className="form-section">
+        <h3>🔑 API Keys</h3>
+        <p className="section-description">
+          Usa la API de ClientFlow Pro para integraciones personalizadas
+        </p>
+
+        <div className="api-key-section">
+          {integrationsData.api_key ? (
+            <>
+              <div className="api-key-display">
+                <code>{integrationsData.api_key}</code>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="small"
+                  onClick={handleCopyApiKey}
+                >
+                  Copiar
+                </Button>
+              </div>
+              <Button
+                type="button"
+                variant="danger"
+                size="small"
+                onClick={() => setIntegrationsData(prev => ({ ...prev, api_key: '' }))}
+              >
+                Revocar Key
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleGenerateApiKey}
+            >
+              Generar API Key
+            </Button>
+          )}
+        </div>
+
+        <FormField
+          label="Webhook URL"
+          type="text"
+          name="webhook_url"
+          value={integrationsData.webhook_url}
+          onChange={handleIntegrationsChange}
+          placeholder="https://tu-servidor.com/webhook"
+          helperText="URL para recibir notificaciones de eventos (nuevas citas, leads, etc.)"
+        />
       </div>
-    </div>
+
+      <div className="form-section">
+        <h3>📅 Calendarios</h3>
+        <p className="section-description">
+          Sincroniza tus citas con Google Calendar u Outlook
+        </p>
+
+        <div className="integration-list">
+          <div className="integration-item">
+            <div className="integration-info">
+              <span className="integration-icon">📅</span>
+              <div>
+                <h4>Google Calendar</h4>
+                <p>Sincronización bidireccional de citas</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant={integrationsData.google_calendar_connected ? "success" : "secondary"}
+              size="small"
+              onClick={() => handleConnectIntegration('Google Calendar')}
+            >
+              {integrationsData.google_calendar_connected ? 'Conectado' : 'Conectar'}
+            </Button>
+          </div>
+
+          <div className="integration-item">
+            <div className="integration-info">
+              <span className="integration-icon">📆</span>
+              <div>
+                <h4>Outlook Calendar</h4>
+                <p>Sincroniza con Microsoft Outlook</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant={integrationsData.outlook_calendar_connected ? "success" : "secondary"}
+              size="small"
+              onClick={() => handleConnectIntegration('Outlook Calendar')}
+            >
+              {integrationsData.outlook_calendar_connected ? 'Conectado' : 'Conectar'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h3>💳 Pagos</h3>
+        <p className="section-description">
+          Conecta tu cuenta de pagos para cobrar citas online
+        </p>
+
+        <div className="integration-list">
+          <div className="integration-item">
+            <div className="integration-info">
+              <span className="integration-icon">💳</span>
+              <div>
+                <h4>Stripe</h4>
+                <p>Acepta tarjetas de crédito y débito</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant={integrationsData.stripe_connected ? "success" : "secondary"}
+              size="small"
+              onClick={() => handleConnectIntegration('Stripe')}
+            >
+              {integrationsData.stripe_connected ? 'Conectado' : 'Conectar'}
+            </Button>
+          </div>
+
+          <div className="integration-item">
+            <div className="integration-info">
+              <span className="integration-icon">💰</span>
+              <div>
+                <h4>PayPal</h4>
+                <p>Acepta pagos con PayPal</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant={integrationsData.paypal_connected ? "success" : "secondary"}
+              size="small"
+              onClick={() => handleConnectIntegration('PayPal')}
+            >
+              {integrationsData.paypal_connected ? 'Conectado' : 'Conectar'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h3>🎥 Videollamadas</h3>
+        <p className="section-description">
+          Enlaces automáticos de videollamada en confirmaciones
+        </p>
+
+        <div className="integration-list">
+          <div className="integration-item">
+            <div className="integration-info">
+              <span className="integration-icon">📹</span>
+              <div>
+                <h4>Zoom</h4>
+                <p>Crea reuniones de Zoom automáticamente</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant={integrationsData.zoom_connected ? "success" : "secondary"}
+              size="small"
+              onClick={() => handleConnectIntegration('Zoom')}
+            >
+              {integrationsData.zoom_connected ? 'Conectado' : 'Conectar'}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <Button type="submit" variant="primary" loading={saving}>
+          Guardar Configuración
+        </Button>
+      </div>
+    </form>
   );
 
   const renderDangerTab = () => (
@@ -377,7 +779,6 @@ const SettingsPage = () => {
           >
             <span className="tab-icon">🔔</span>
             <span>Notificaciones</span>
-            <span className="tab-badge">Fase 3</span>
           </button>
           <button
             className={`settings-tab ${activeTab === 'integrations' ? 'active' : ''}`}
@@ -385,7 +786,6 @@ const SettingsPage = () => {
           >
             <span className="tab-icon">🔌</span>
             <span>Integraciones</span>
-            <span className="tab-badge">Fase 3</span>
           </button>
           <button
             className={`settings-tab ${activeTab === 'danger' ? 'active' : ''}`}

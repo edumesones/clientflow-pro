@@ -53,3 +53,8 @@ export const publicAPI = {
   bookAppointment: (data) => api.post('/public/book', data),
   submitLead: (data) => api.post('/public/leads', data),
 };
+
+export const usersAPI = {
+  getClients: (params) => api.get('/users/clients', { params }),
+  getClientStats: (clientId) => api.get(`/users/clients/${clientId}/stats`),
+};

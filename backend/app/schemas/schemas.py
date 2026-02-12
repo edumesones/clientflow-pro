@@ -264,3 +264,27 @@ class PublicBookingResponse(BaseModel):
     success: bool
     message: str
     appointment_id: Optional[int] = None
+
+# ========== CLIENT SCHEMAS ==========
+
+class ClientResponse(BaseModel):
+    id: int
+    full_name: str
+    email: EmailStr
+    phone: Optional[str]
+    total_appointments: int
+    last_appointment_date: Optional[date]
+    status: str  # active, inactive, vip
+    no_show_rate: float
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ClientStats(BaseModel):
+    total_appointments: int
+    completed: int
+    cancelled: int
+    no_show: int
+    no_show_rate: float
+    average_rating: Optional[float] = None
