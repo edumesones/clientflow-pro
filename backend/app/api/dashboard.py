@@ -171,6 +171,25 @@ async def get_dashboard_leads(
         ) for lead in leads
     ]
 
+# Alias routes for frontend compatibility
+@router.get("/upcoming", response_model=List[UpcomingAppointment])
+async def get_dashboard_upcoming_alias(
+    limit: int = 5,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Alias for /upcoming-appointments"""
+    return await get_dashboard_upcoming(limit, db, current_user)
+
+@router.get("/leads/recent", response_model=List[RecentLead])
+async def get_dashboard_leads_alias(
+    limit: int = 5,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Alias for /recent-leads"""
+    return await get_dashboard_leads(limit, db, current_user)
+
 @router.get("/data", response_model=DashboardData)
 async def get_full_dashboard(
     db: Session = Depends(get_db),
