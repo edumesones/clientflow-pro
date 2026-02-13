@@ -19,9 +19,12 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
+      console.log('Fetching user...');
       const response = await api.get('/auth/me');
+      console.log('User fetched:', response.data);
       setUser(response.data);
     } catch (error) {
+      console.error('Fetch user error:', error.message, error.response?.data);
       localStorage.removeItem('token');
       delete api.defaults.headers.common['Authorization'];
     } finally {
@@ -31,16 +34,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      console.log('Login attempt:', { email, apiUrl: process.env.REACT_APP_API_URL });
       const response = await api.post('/auth/login-json', { email, password });
+      console.log('Login response:', response.data);
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       await fetchUser();
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error.message, error.response?.data);
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Error al iniciar sesión' 
+        error: error.response?.data?.detail || error.message || 'Error al iniciar sesión' 
       };
     }
   };
