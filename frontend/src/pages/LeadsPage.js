@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
@@ -27,11 +27,7 @@ const LeadsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  useEffect(() => {
-    fetchLeads();
-  }, [filters]);
-
-  const fetchLeads = async () => {
+  const fetchLeads = useCallback(async () => {
     try {
       setLoading(true);
       const params = {};
@@ -46,7 +42,11 @@ const LeadsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));

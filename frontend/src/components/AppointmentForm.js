@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import FormField from './FormField';
 import Button from './Button';
 import { appointmentsAPI, availabilityAPI } from '../services/apiService';
@@ -19,6 +19,7 @@ const AppointmentForm = ({ appointment, onSuccess, onCancel }) => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
@@ -38,13 +39,7 @@ const AppointmentForm = ({ appointment, onSuccess, onCancel }) => {
     }
   }, [appointment]);
 
-  useEffect(() => {
-    if (formData.appointment_date) {
-      fetchAvailableSlots();
-    }
-  }, [formData.appointment_date]);
-
-  const fetchAvailableSlots = async () => {
+  const fetchAvailableSlots = useCallback(async () => {
     try {
       setLoadingSlots(true);
       // Note: This endpoint needs professional_id, we're using a placeholder
@@ -57,7 +52,13 @@ const AppointmentForm = ({ appointment, onSuccess, onCancel }) => {
     } finally {
       setLoadingSlots(false);
     }
-  };
+  }, [formData.appointment_date]);
+
+  useEffect(() => {
+    if (formData.appointment_date) {
+      fetchAvailableSlots();
+    }
+  }, [formData.appointment_date, fetchAvailableSlots]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

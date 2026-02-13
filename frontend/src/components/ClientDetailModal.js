@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from './Modal';
 import Button from './Button';
 import { usersAPI } from '../services/apiService';
@@ -9,13 +9,7 @@ const ClientDetailModal = ({ isOpen, onClose, client, onRefresh }) => {
   const [clientStats, setClientStats] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && client) {
-      fetchClientStats();
-    }
-  }, [isOpen, client]);
-
-  const fetchClientStats = async () => {
+  const fetchClientStats = useCallback(async () => {
     try {
       setLoading(true);
       const response = await usersAPI.getClientStats(client.id);
@@ -35,7 +29,13 @@ const ClientDetailModal = ({ isOpen, onClose, client, onRefresh }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [client]);
+
+  useEffect(() => {
+    if (isOpen && client) {
+      fetchClientStats();
+    }
+  }, [isOpen, client, fetchClientStats]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';

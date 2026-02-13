@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Table from '../components/Table';
 import Button from '../components/Button';
 import ClientDetailModal from '../components/ClientDetailModal';
@@ -15,11 +15,7 @@ const ClientsPage = () => {
     search: '',
   });
 
-  useEffect(() => {
-    fetchClients();
-  }, [filters]);
-
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
       const response = await usersAPI.getClients(filters);
@@ -31,7 +27,11 @@ const ClientsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchClients();
+  }, [fetchClients]);
 
   const handleClientClick = (client) => {
     setSelectedClient(client);

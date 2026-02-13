@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import TimeSlotPicker from '../components/TimeSlotPicker';
 import Button from '../components/Button';
 import { availabilityAPI } from '../services/apiService';
@@ -31,11 +31,7 @@ const AvailabilityPage = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    fetchSchedule();
-  }, []);
-
-  const fetchSchedule = async () => {
+  const fetchSchedule = useCallback(async () => {
     try {
       setLoading(true);
       const response = await availabilityAPI.getMySlots();
@@ -67,7 +63,12 @@ const AvailabilityPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchSchedule();
+  }, [fetchSchedule]);
 
   const toggleDay = (dayKey) => {
     setSchedule(prev => ({

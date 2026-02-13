@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Table from '../components/Table';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
@@ -29,11 +29,7 @@ const AppointmentsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  useEffect(() => {
-    fetchAppointments();
-  }, [filters]);
-
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     try {
       setLoading(true);
       const params = {};
@@ -49,7 +45,11 @@ const AppointmentsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));

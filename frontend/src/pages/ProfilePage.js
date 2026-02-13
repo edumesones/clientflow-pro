@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import FormField from '../components/FormField';
 import Button from '../components/Button';
 import { professionalsAPI } from '../services/apiService';
@@ -26,11 +26,7 @@ const ProfilePage = () => {
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState(null);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       const response = await professionalsAPI.getMyProfile();
@@ -56,7 +52,12 @@ const ProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
