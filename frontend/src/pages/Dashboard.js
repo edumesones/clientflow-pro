@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [recentLeads, setRecentLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedLead, setSelectedLead] = useState(null);
   const [showAppointmentDetail, setShowAppointmentDetail] = useState(false);
@@ -23,6 +24,7 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       console.log('Fetching dashboard data...');
+      setError(null);
       const [statsRes, upcomingRes, leadsRes] = await Promise.all([
         dashboardAPI.getStats(),
         dashboardAPI.getUpcoming(5),
@@ -34,17 +36,19 @@ const Dashboard = () => {
       console.log('Leads:', leadsRes.data);
       
       setStats(statsRes.data);
-      setUpcoming(upcomingRes.data);
-      setRecentLeads(leadsRes.data);
+      setUpcoming(upcomingRes.data || []);
+      setRecentLeads(leadsRes.data || []);
     } catch (error) {
       console.error('Error fetching dashboard:', error);
       console.error('Error details:', error.response?.data);
+      setError(error.message || 'Error cargando datos');
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) return <div className="loading">Cargando...</div>;
+  if (error) return <div className="loading" style={{color: 'red'}}>Error: {error}</div>;
 
   const getStatusBadge = (status) => {
     const statusMap = {

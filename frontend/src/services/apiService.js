@@ -9,8 +9,8 @@ export const authAPI = {
 
 export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),
-  getUpcoming: (limit = 5) => api.get(`/dashboard/upcoming-appointments?limit=${limit}`),
-  getRecentLeads: (limit = 5) => api.get(`/dashboard/recent-leads?limit=${limit}`),
+  getUpcoming: (limit = 5) => api.get(`/dashboard/upcoming?limit=${limit}`),
+  getRecentLeads: (limit = 5) => api.get(`/dashboard/leads/recent?limit=${limit}`),
   getFullData: () => api.get('/dashboard/data'),
 };
 
