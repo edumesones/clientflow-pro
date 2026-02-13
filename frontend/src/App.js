@@ -15,7 +15,33 @@ import ClientsPage from './pages/ClientsPage';
 import SettingsPage from './pages/SettingsPage';
 
 function App() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="loading-screen" style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        background: '#f5f7fa'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="spinner" style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #e5e7eb',
+            borderTop: '4px solid #3b82f6',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px'
+          }} />
+          <p style={{ color: '#6b7280' }}>Cargando...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
