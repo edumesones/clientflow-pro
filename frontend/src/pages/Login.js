@@ -33,22 +33,6 @@ const Login = () => {
     setLoading(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    const result = await login(email, password);
-    
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.error);
-    }
-    
-    setLoading(false);
-  };
-
   return (
     <div className="auth-container">
       <div className="auth-card">
