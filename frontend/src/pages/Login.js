@@ -8,17 +8,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
-  
-  // Debug: Mostrar API URL
-  const apiUrl = process.env.REACT_APP_API_URL || 'NO CONFIGURADA (usando localhost:8000)';
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setDebugInfo(`Intentando login con API: ${apiUrl}`);
     setLoading(true);
 
     const result = await login(email, password);
@@ -27,7 +22,6 @@ const Login = () => {
       navigate('/dashboard');
     } else {
       setError(result.error);
-      setDebugInfo(`${debugInfo}\nError: ${result.error}`);
     }
     
     setLoading(false);
@@ -79,15 +73,26 @@ const Login = () => {
           ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
         </p>
         
-        <div className="auth-demo">
-          <p>Credenciales demo:</p>
-          <code>demo@clientflow.pro / demo123</code>
-        </div>
-        
-        <div style={{marginTop: '20px', padding: '10px', background: '#f3f4f6', borderRadius: '4px', fontSize: '11px', color: '#6b7280', wordBreak: 'break-all'}}>
-          <strong>Debug:</strong> API URL = {apiUrl}
-          {debugInfo && <pre style={{marginTop: '8px', whiteSpace: 'pre-wrap'}}>{debugInfo}</pre>}
-        </div>
+        {/* Debug info solo visible en desarrollo */}
+        {process.env.NODE_ENV === 'development' && (
+          <>
+            <div className="auth-demo">
+              <p>Credenciales demo:</p>
+              <code>demo@clientflow.pro / demo123</code>
+            </div>
+            <div style={{
+              marginTop: '20px', 
+              padding: '10px', 
+              background: '#f3f4f6', 
+              borderRadius: '4px', 
+              fontSize: '11px', 
+              color: '#6b7280', 
+              wordBreak: 'break-all'
+            }}>
+              <strong>Debug:</strong> API URL = {process.env.REACT_APP_API_URL || 'localhost:8000'}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

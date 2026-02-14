@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-// Force rebuild: 2026-02-12 - API URL fix
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-console.log('API URL:', API_URL); // Debug
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,

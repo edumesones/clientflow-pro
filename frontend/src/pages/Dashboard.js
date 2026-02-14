@@ -23,7 +23,6 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      console.log('Fetching dashboard data...');
       setError(null);
       const [statsRes, upcomingRes, leadsRes] = await Promise.all([
         dashboardAPI.getStats(),
@@ -31,17 +30,15 @@ const Dashboard = () => {
         dashboardAPI.getRecentLeads(5),
       ]);
       
-      console.log('Stats:', statsRes.data);
-      console.log('Upcoming:', upcomingRes.data);
-      console.log('Leads:', leadsRes.data);
-      
       setStats(statsRes.data);
       setUpcoming(upcomingRes.data || []);
       setRecentLeads(leadsRes.data || []);
     } catch (error) {
-      console.error('Error fetching dashboard:', error);
-      console.error('Error details:', error.response?.data);
-      setError(error.message || 'Error cargando datos');
+      if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching dashboard:', error);
+      }
+      setError('Error cargando datos');
     } finally {
       setLoading(false);
     }
