@@ -35,7 +35,8 @@ const LeadsPage = () => {
       if (filters.search) params.search = filters.search;
 
       const response = await leadsAPI.getAll(params);
-      setLeads(response.data || []);
+      // Manejar formato paginado o array directo
+      setLeads(response.data?.items || response.data || []);
     } catch (error) {
       console.error('Error fetching leads:', error);
       setLeads([]);

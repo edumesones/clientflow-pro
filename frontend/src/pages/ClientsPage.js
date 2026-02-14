@@ -19,11 +19,13 @@ const ClientsPage = () => {
     try {
       setLoading(true);
       const response = await usersAPI.getClients(filters);
-      setClients(response.data);
+      // Manejar formato paginado o array directo
+      const clientsData = response.data?.items || response.data || [];
+      setClients(clientsData);
     } catch (error) {
       console.error('Error fetching clients:', error);
-      // Show error message to user
       alert('Error al cargar clientes. Por favor intenta de nuevo.');
+      setClients([]);
     } finally {
       setLoading(false);
     }

@@ -38,7 +38,8 @@ const AppointmentsPage = () => {
       if (filters.end_date) params.end_date = filters.end_date;
 
       const response = await appointmentsAPI.getAll(params);
-      setAppointments(response.data || []);
+      // Manejar formato paginado o array directo
+      setAppointments(response.data?.items || response.data || []);
     } catch (error) {
       console.error('Error fetching appointments:', error);
       setAppointments([]);
